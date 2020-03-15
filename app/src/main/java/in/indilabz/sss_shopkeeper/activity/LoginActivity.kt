@@ -72,7 +72,15 @@ class LoginActivity : AppCompatActivity() {
 
                 val loginresult = value.loginResult
                 if(value.success && loginresult != null){
-                    val shopResponse = Shop(loginresult.id,loginresult.name,loginresult.email,loginresult.phone,loginresult.password,loginresult.category.toString(),loginresult.currentAddress,"")
+                    val shopResponse = Shop(
+                        loginresult.id,
+                        loginresult.name,
+                        loginresult.email,
+                        loginresult.phone,
+                        loginresult.password,
+                        loginresult.category.toString(),
+                        loginresult.currentAddress,
+                        loginresult.shopImage)
 
                     INDIPreferences.shop(shopResponse)
                     INDIPreferences.session(true)
