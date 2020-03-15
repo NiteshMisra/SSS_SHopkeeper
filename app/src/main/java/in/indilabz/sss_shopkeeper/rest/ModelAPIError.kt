@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 
 class ModelAPIError {
 
-    @SerializedName("error")
+    @SerializedName("message")
     @Expose
     val error: String? = null
 

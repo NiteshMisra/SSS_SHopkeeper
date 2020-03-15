@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -12,27 +12,66 @@
             android:id="@+id/appBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/AppTheme.AppBarOverlay"/>
+            android:theme="@style/AppTheme.AppBarOverlay">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:title="Profile"
+                android:background="@color/appBar"
+                app:titleTextColor="#FCFCFC"
+                app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+        </com.google.android.material.appbar.AppBarLayout>
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/appBar"
+            android:overScrollMode="never"
             android:background="#F0F0F0"
             android:layout_above="@+id/logout">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_marginStart="@dimen/fab_margin"
-                android:layout_marginEnd="@dimen/fab_margin">
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="190dp">
+
+                    <ImageView
+                        android:id="@+id/profileImage"
+                        android:layout_width="match_parent"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_person"
+                        android:background="#D9CCDF"
+                        android:layout_marginBottom="25dp"
+                        android:layout_height="match_parent"/>
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/change_image"
+                        android:layout_width="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentEnd="true"
+                        app:backgroundTint="@color/appBar"
+                        app:srcCompat="@drawable/ic_add_a_photo"
+                        tools:ignore="VectorDrawableCompat"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/ic_person"
+                        android:layout_height="wrap_content"/>
+
+                </RelativeLayout>
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColorHint="@color/black"
                     android:layout_marginTop="20dp"
+                    android:layout_marginStart="@dimen/fab_margin"
+                    android:layout_marginEnd="@dimen/fab_margin"
                     android:text="Shop ID"
                     android:textSize="13sp"
                     android:fontFamily="@font/poppins"/>
@@ -43,6 +82,8 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/rect_gray"
                     android:padding="10dp"
+                    android:layout_marginStart="@dimen/fab_margin"
+                    android:layout_marginEnd="@dimen/fab_margin"
                     android:fontFamily="@font/poppins"
                     android:textColor="@color/black"
                     android:textColorHint="@color/black"
@@ -54,6 +95,8 @@
                     android:textColorHint="@color/black"
                     android:layout_marginTop="20dp"
                     android:textSize="13sp"
+                    android:layout_marginStart="@dimen/fab_margin"
+                    android:layout_marginEnd="@dimen/fab_margin"
                     android:fontFamily="@font/poppins"
                     android:text="Full Name   (Click below to edit)" />
 
@@ -63,6 +106,8 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/rect_gray"
                     android:padding="10dp"
+                    android:layout_marginStart="@dimen/fab_margin"
+                    android:layout_marginEnd="@dimen/fab_margin"
                     android:textColor="@color/black"
                     android:fontFamily="@font/poppins"
                     android:textColorHint="@color/black"
@@ -75,6 +120,8 @@
                     android:layout_marginTop="20dp"
                     android:fontFamily="@font/poppins"
                     android:textSize="13sp"
+                    android:layout_marginStart="@dimen/fab_margin"
+                    android:layout_marginEnd="@dimen/fab_margin"
                     android:text="Phone   (Click below to edit)"/>
 
                 <TextView
@@ -83,6 +130,8 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/rect_gray"
                     android:padding="10dp"
+                    android:layout_marginStart="@dimen/fab_margin"
+                    android:layout_marginEnd="@dimen/fab_margin"
                     android:textColor="@color/black"
                     android:fontFamily="@font/poppins"
                     android:textColorHint="@color/black"/>
@@ -93,19 +142,22 @@
                     android:textColorHint="@color/black"
                     android:layout_marginTop="20dp"
                     android:fontFamily="@font/poppins"
+                    android:layout_marginStart="@dimen/fab_margin"
+                    android:layout_marginEnd="@dimen/fab_margin"
                     android:textSize="13sp"
-                    android:text="Username   (Click below to edit)"/>
+                    android:text="Email"/>
 
                 <TextView
-                    android:id="@+id/username"
+                    android:id="@+id/email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/rect_gray"
                     android:padding="10dp"
+                    android:textColor="@color/black"
+                    android:layout_marginStart="@dimen/fab_margin"
+                    android:layout_marginEnd="@dimen/fab_margin"
                     android:fontFamily="@font/poppins"
-                    android:textColorHint="@color/black"
-                    android:textSize="14sp"
-                    android:textColor="@color/black"/>
+                    android:textColorHint="@color/black"/>
 
                 <TextView
                     android:layout_width="match_parent"
@@ -114,12 +166,16 @@
                     android:layout_marginTop="20dp"
                     android:fontFamily="@font/poppins"
                     android:textSize="13sp"
+                    android:layout_marginStart="@dimen/fab_margin"
+                    android:layout_marginEnd="@dimen/fab_margin"
                     android:text="Category   (Click below to edit)"/>
 
                 <TextView
                     android:id="@+id/category"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/fab_margin"
+                    android:layout_marginEnd="@dimen/fab_margin"
                     android:background="@drawable/rect_gray"
                     android:padding="10dp"
                     android:fontFamily="@font/poppins"
@@ -132,6 +188,8 @@
                     android:textColorHint="@color/black"
                     android:layout_marginTop="20dp"
                     android:textSize="13sp"
+                    android:layout_marginStart="@dimen/fab_margin"
+                    android:layout_marginEnd="@dimen/fab_margin"
                     android:fontFamily="@font/poppins"
                     android:text="Address   (Click below to edit)"/>
 
@@ -142,6 +200,8 @@
                     android:background="@drawable/rect_gray"
                     android:padding="10dp"
                     android:fontFamily="@font/poppins"
+                    android:layout_marginStart="@dimen/fab_margin"
+                    android:layout_marginEnd="@dimen/fab_margin"
                     android:textColor="@color/black"
                     android:textSize="14sp"
                     android:textColorHint="@color/black" />
@@ -164,7 +224,7 @@
             android:fontFamily="@font/poppins_semibold"
             android:text="Logout"
             android:layout_alignParentBottom="true"
-            android:background="#FF0000"
+            app:backgroundTint="@color/appBar"
             android:textColor="@color/white"/>
 
     </RelativeLayout>

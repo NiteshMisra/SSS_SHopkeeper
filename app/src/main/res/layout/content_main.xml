@@ -10,10 +10,16 @@
     android:background="#F0F0F0"
     tools:showIn="@layout/activity_main">
 
+    <View
+        android:layout_width="match_parent"
+        android:background="@color/appBar"
+        android:layout_height="70dp"/>
+
     <androidx.cardview.widget.CardView
         android:id="@+id/updateAmount"
         android:layout_width="match_parent"
         android:layout_height="80dp"
+        android:visibility="gone"
         android:layout_margin="@dimen/fab_margin"
         app:cardCornerRadius="4dp">
 
@@ -63,6 +69,7 @@
         android:layout_below="@+id/updateAmount"
         android:layout_marginStart="@dimen/fab_margin"
         android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginTop="20dp"
         android:weightSum="3">
 
         <androidx.cardview.widget.CardView

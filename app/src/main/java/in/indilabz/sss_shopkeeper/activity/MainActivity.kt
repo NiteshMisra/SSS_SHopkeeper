@@ -3,216 +3,83 @@ package `in`.indilabz.sss_shopkeeper.activity
 import `in`.indilabz.sss_shopkeeper.INDIMaster
 import `in`.indilabz.sss_shopkeeper.R
 import `in`.indilabz.sss_shopkeeper.model.Discount
-import `in`.indilabz.sss_shopkeeper.model.DiscountLog
-import `in`.indilabz.sss_shopkeeper.model.Shop
+import `in`.indilabz.sss_shopkeeper.response.UpdateResponse
 import `in`.indilabz.sss_shopkeeper.rest.RetrofitInstance
-import `in`.indilabz.sss_shopkeeper.utils.INDIPreferences
 import `in`.indilabz.sss_shopkeeper.utils.Toaster
-import `in`.indilabz.student_union.rest.APIHelper
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
-import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputLayout
+import com.google.gson.Gson
 import com.google.zxing.integration.android.IntentIntegrator
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.content_main.*
 
 
 class MainActivity : AppCompatActivity() {
 
-    var scan:IntentIntegrator? = null
-
-    var discount: TextView? = null
-    var sumStudent: TextView? = null
-    var sumAdmin: TextView? = null
-    var cardView: CardView? = null
-    var profile: LinearLayout? = null
-    var submitAmount: String = ""
-    lateinit var fab : FloatingActionButton
-
-    val shop: Shop? = INDIPreferences.shop()
+    private var discount: TextView? = null
+    private var sumStudent: TextView? = null
+    private var sumAdmin: TextView? = null
+    private var profile: LinearLayout? = null
+    private var submitAmount: String = ""
+    private lateinit var fab : FloatingActionButton
+    private val SCAN_REQUEST_CODE = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        cardView = findViewById(R.id.updateAmount)
         discount = findViewById(R.id.discount)
         sumStudent = findViewById(R.id.sumStudent)
         sumAdmin = findViewById(R.id.sumAdmin)
         profile = findViewById(R.id.profile)
         fab = findViewById(R.id.fab)
 
-        scan = IntentIntegrator(this@MainActivity)
 
         fab.setOnClickListener {
-            scan!!.initiateScan()
+            startActivityForResult(Intent(this,Scan::class.java),SCAN_REQUEST_CODE)
         }
 
-        profile!!.setOnClickListener { view ->
-
-            val integrator = IntentIntegrator(this@MainActivity)
-            integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES)
-            integrator.setPrompt("Scan")
-            integrator.setCameraId(0)
-            integrator.setBeepEnabled(false)
-            integrator.setBarcodeImageEnabled(false)
-            integrator.initiateScan()
-
-            //currentSale(this@MainActivity)
-        }
-
-        cardView!!.setOnClickListener{ view ->
-
-            updateAmount(this)
-        }
-
-        findViewById<LinearLayout>(R.id.profile).setOnClickListener {
+        this.profile!!.setOnClickListener {
             startActivity(Intent(this, ProfileActivity::class.java))
         }
-
-        try{
-            discount!!.text = "${shop!!.discount} %"
-        }
-        catch (e: Exception){
-            e.printStackTrace()
-        }
-
-        log()
     }
 
-    private fun update(amount: String){
+    private fun sale(discount : Discount, amount: String){
 
         this.submitAmount = amount
 
-        RetrofitInstance.getRetrofit(
-            INDIMaster.api().updateAmount(
-                shop!!.shop_p_id,
-                amount
-            ),
-            result)
-    }
+        val discount2 = (amount.toInt() * discount.discount.toInt())/100
+        val availedDiscount = (amount.toInt() * discount.allowed_discount.toInt())/100
 
-    private fun sale(discount: Discount, amount: String){
+        val sendAmount = Math.abs(discount2 - availedDiscount)
 
-        this.submitAmount = amount
-
-        val disAmount = (discount.percent.toInt() * amount.toInt())/100
-
-        val oriAmount = (shop!!.discount.toInt() * amount.toInt())/100
-
-        RetrofitInstance.getRetrofit(
+        RetrofitInstance.getAvailedRetrofit(
             INDIMaster.api().discountLog(
-
+                discount.unique_id,
                 discount.student_id,
-                shop!!.shop_p_id,
-                amount,
-                disAmount,
-                oriAmount
+                discount.shop_id,
+                sendAmount.toString()
             ),
             discountRes)
     }
 
-    private fun log(){
-
-        RetrofitInstance.getRetrofit(
-            INDIMaster.api().totalDiscount(
-                shop!!.shop_p_id
-            ),
-            log)
-    }
-
-    private val result = { _: Int, bool:Boolean, value: String ->
+    private val discountRes = {_: Int,bool:Boolean, value: UpdateResponse ->
 
         if(bool){
-
-            if(value.contains("200")){
-
-                var shop = shop!!
-                shop.discount = submitAmount
-
-                INDIPreferences.shop(shop)
-
-                discount!!.text = "$submitAmount%"
-            }
-            else{
-                Toaster.longt("Unable to update discount!")
-            }
+            Toaster.longt("Updated")
+        }else{
+            Toaster.longt(value.error)
         }
-    }
-
-    private val discountRes = { _: Int, bool:Boolean, value: String ->
-
-        if(bool){
-
-            if(value.contains("200")){
-
-                Toaster.longt(value)
-            }
-            else{
-                Toaster.longt("Unable to update discount!")
-            }
-        }
-    }
-
-    private val log = { _: Int, bool:Boolean, value: String ->
-
-        if(bool){
-
-            val data = APIHelper.result(value)
-
-            val datum = data.replace("[", "").replace("]","")
-
-            val discountLog = INDIMaster.gson.fromJson(datum, DiscountLog::class.java)
-
-            sumStudent!!.text = discountLog.discount
-            sumAdmin!!.text = discountLog.total_discount
-        }
-    }
-
-    private fun updateAmount(context: Context) {
-        val textInputLayout = TextInputLayout(context)
-        textInputLayout.setPadding(
-            resources.getDimensionPixelOffset(R.dimen.fab_margin), // if you look at android alert_dialog.xml, you will see the message textview have margin 14dp and padding 5dp. This is the reason why I use 19 here
-            0,
-            resources.getDimensionPixelOffset(R.dimen.fab_margin),
-            0
-        )
-        val input = EditText(context)
-        textInputLayout.hint = "Amount"
-        input.setInputType(InputType.TYPE_CLASS_NUMBER)
-        textInputLayout.addView(input)
-
-        val alert = AlertDialog.Builder(context)
-            .setTitle("Discount")
-            .setView(textInputLayout)
-            .setMessage("Please enter the amount of discount you are offering!")
-            .setPositiveButton("Submit") { dialog, _ ->
-                // do some thing with input.text
-                if(input.text.isNotEmpty()){
-
-                    update(input.text.toString())
-                    dialog.cancel()
-                }
-                else{
-                    Toaster.longt("Invalid amount!")
-                }
-            }
-            .setNegativeButton("Cancel") { dialog, _ ->
-                dialog.cancel()
-            }.create()
-
-        alert.show()
     }
 
     private fun currentSale(context: Context, dis: Discount) {
@@ -225,7 +92,7 @@ class MainActivity : AppCompatActivity() {
         )
         val input = EditText(context)
         textInputLayout.hint = "Sale"
-        input.setInputType(InputType.TYPE_CLASS_NUMBER)
+        input.inputType = InputType.TYPE_CLASS_NUMBER
         textInputLayout.addView(input)
 
         val alert = AlertDialog.Builder(context)
@@ -234,7 +101,7 @@ class MainActivity : AppCompatActivity() {
             .setMessage("Please enter the current sale amount!")
             .setPositiveButton("Submit") { dialog, _ ->
                 // do some thing with input.text
-                if(input.text.isNotEmpty()){
+                if(input.text.isNotEmpty() && input.text.toString().toInt() > 0){
 
                     sale(dis, input.text.toString())
                     dialog.cancel()
@@ -252,23 +119,14 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-
-        val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
-
-        if (result != null) {
-
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == SCAN_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
 
             try{
 
-                val dis = INDIMaster.gson.fromJson(result!!.contents, Discount::class.java)
-
-                if(dis.percent.toInt()>0){
-
-                    currentSale(this@MainActivity, dis)
-                }
-                else{
-                    Toaster.longt("No discount for this student!")
-                }
+                val value: String  = data.getStringExtra("GSON")!!
+                val dis : Discount = Gson().fromJson(value, Discount::class.java)
+                currentSale(this@MainActivity, dis)
             }
             catch(e: Exception){
                 Toaster.longt("Invalid student details!")

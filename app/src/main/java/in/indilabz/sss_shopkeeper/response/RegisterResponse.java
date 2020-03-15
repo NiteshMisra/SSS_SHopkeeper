@@ -1,81 +1,37 @@
 package in.indilabz.sss_shopkeeper.response;
 
 import com.google.gson.annotations.SerializedName;
+import org.jetbrains.annotations.Nullable;
+
+import in.indilabz.sss_shopkeeper.model.RegisterResult;
 
 public class RegisterResponse {
 
-    @SerializedName("response_code")
-    private Integer responseCode;
+    @SerializedName("success")
+    private Boolean success;
 
-    @SerializedName("contact_number")
-    private String contactNumber;
+    @SerializedName("error")
+    private String error;
 
-    @SerializedName("full-name")
-    private String fullName;
+    @Nullable
+    @SerializedName("result")
+    private RegisterResult result;
 
-    @SerializedName("category")
-    private String category;
-
-    @SerializedName("discount")
-    private String discount;
-
-    @SerializedName("password")
-    private String password;
-
-    @SerializedName("email")
-    private String email;
-
-    @SerializedName("current_address")
-    private String currentAddress;
-
-    @SerializedName("response_msg")
-    private String responseMessage;
-
-    public RegisterResponse(Integer responseCode, String contactNumber, String fullName, String category, String discount, String password, String email, String currentAddress, String responseMessage) {
-        this.responseCode = responseCode;
-        this.contactNumber = contactNumber;
-        this.fullName = fullName;
-        this.category = category;
-        this.discount = discount;
-        this.password = password;
-        this.email = email;
-        this.currentAddress = currentAddress;
-        this.responseMessage = responseMessage;
+    public RegisterResponse(Boolean success, String error, @Nullable RegisterResult result) {
+        this.success = success;
+        this.error = error;
+        this.result = result;
     }
 
-    public String getResponseMessage() {
-        return responseMessage;
+    public Boolean getSuccess() {
+        return success;
     }
 
-    public Integer getResponseCode() {
-        return responseCode;
+    public String getError() {
+        return error;
     }
 
-    public String getContactNumber() {
-        return contactNumber;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public String getDiscount() {
-        return discount;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getCurrentAddress() {
-        return currentAddress;
+    public @Nullable RegisterResult getResult() {
+        return result;
     }
 }

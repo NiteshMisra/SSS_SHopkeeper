@@ -3,118 +3,182 @@ package `in`.indilabz.sss_shopkeeper.activity
 import `in`.indilabz.sss_shopkeeper.INDIMaster
 import `in`.indilabz.sss_shopkeeper.R
 import `in`.indilabz.sss_shopkeeper.databinding.ActivityRegisterBinding
+import `in`.indilabz.sss_shopkeeper.model.Register
+import `in`.indilabz.sss_shopkeeper.response.CategoryResponse
+import `in`.indilabz.sss_shopkeeper.response.UpdateResponse
 import `in`.indilabz.sss_shopkeeper.rest.RetrofitInstance
-import android.app.Activity
+import `in`.indilabz.sss_shopkeeper.utils.Toaster
+import android.app.AlertDialog
 import android.content.Intent
-import android.graphics.Bitmap
-import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.MediaStore
-import android.util.Base64
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import java.io.ByteArrayOutputStream
-import java.lang.Exception
+import com.google.gson.Gson
+import dmax.dialog.SpotsDialog
 
-class RegisterActivity : AppCompatActivity() {
+class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+        categorySelected = false
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        if (position == 0) {
+            categorySelected = false
+        } else {
+            categoryText = parent!!.getItemAtPosition(position).toString()
+            categorySelected = true
+        }
+    }
 
     private lateinit var binding: ActivityRegisterBinding
-    private lateinit var image : String
+    private var serverOtp: String? = null
+    private var categorySelected: Boolean = false
+    private lateinit var categoryText: String
+
+    private lateinit var dialog: AlertDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = DataBindingUtil.setContentView(this,
+        binding = DataBindingUtil.setContentView(
+            this,
             R.layout.activity_register
         )
 
-        binding.uploadPhoto.setOnClickListener {
-            selectImage()
-        }
+        dialog = SpotsDialog.Builder().setContext(this).build()
+
+        RetrofitInstance.getCategoryRetrofit(
+            INDIMaster.api().getCategory(),
+            category
+        )
+
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.setMessage("Please wait...")
+        dialog.show()
 
         binding.submit.setOnClickListener {
 
-            if(binding.phone.editText!!.text.length == 10 &&
-
-                binding.fullName.editText!!.text.isNotEmpty() &&
-
-                binding.category.editText!!.text.isNotEmpty() &&
-
-                binding.email.editText!!.text.isNotEmpty() &&
-
-                binding.curAddress.editText!!.text.isNotEmpty() &&
-
-                binding.password.editText!!.text.length>4)
-            {
-
-                executeRegister()
+            if (binding.phone.editText!!.text.length != 10) {
+                Toaster.longt("Enter valid Mobile No.")
+                return@setOnClickListener
             }
-            else{
 
-                Toast.makeText(this, "Invalid form data!", Toast.LENGTH_LONG).show()
+            if (binding.password.editText!!.text.length <= 4) {
+                Toaster.longt("Password must be greater than 4 digit")
+                return@setOnClickListener
             }
+            if (!categorySelected) {
+                Toaster.longt("Select category")
+                return@setOnClickListener
+            }
+
+            if (binding.curAddress.editText!!.text.isEmpty()){
+                Toaster.longt("Enter your current address")
+                return@setOnClickListener
+            }
+
+            if (binding.perAddress.editText!!.text.isEmpty()){
+                Toaster.longt("Enter your permanent address")
+                return@setOnClickListener
+            }
+
+            if (binding.email.editText!!.text.isEmpty()){
+                Toaster.longt("Enter your email")
+                return@setOnClickListener
+            }
+
+            if (binding.fullName.editText!!.text.isEmpty() ){
+                Toaster.longt("Enter your name")
+                return@setOnClickListener
+            }
+
+            executeRegister()
         }
 
         binding.swipe.setOnRefreshListener { binding.swipe.isRefreshing = false }
     }
 
-    private fun selectImage() {
-        val intent = Intent();
-        intent.type = "image/*"
-        intent.action = Intent.ACTION_GET_CONTENT
-        startActivityForResult(intent,10)
+    private fun executeRegister() {
+
+        dialog.setTitle("Please wait...")
+        dialog.setMessage("Sending OTP...")
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.show()
+
+        RetrofitInstance.getOTPRetrofit(
+            INDIMaster.api().sendOtp(
+                binding.phone.editText!!.text.toString()
+            ),
+            otp
+        )
+
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 10 && resultCode == Activity.RESULT_OK && data != null){
-            val path: Uri = data.data!!
-            try {
-                val bitmap : Bitmap = MediaStore.Images.Media.getBitmap(contentResolver,path)!!
-                val byteStream = ByteArrayOutputStream()
-                bitmap.compress(Bitmap.CompressFormat.JPEG,100,byteStream)
-                val imgBytes = byteStream.toByteArray()
-                image = Base64.encodeToString(imgBytes, Base64.DEFAULT)
-                Toast.makeText(this,"Image selected successfully",Toast.LENGTH_LONG).show()
+    private val category = { _: Int, bool: Boolean, value: CategoryResponse ->
 
-            }catch (e : Exception){
-                e.printStackTrace()
+        if (bool) {
+
+            dialog.dismiss()
+            val result = value.categoryResults
+            if (value.success && result != null) {
+
+                val list = ArrayList<String>()
+                list.add("Select Category")
+                for (item in result) {
+                    list.add(item.title)
+                }
+
+                val categoryAdapter = ArrayAdapter<String>(
+                    this,
+                    android.R.layout.simple_spinner_item,
+                    list
+                )
+                categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                binding.category.adapter = categoryAdapter
+                binding.category.onItemSelectedListener = this
+
             }
         }
     }
 
-    private fun executeRegister() {
+    private val otp = { _: Int, bool: Boolean, value: UpdateResponse ->
 
-        binding.swipe.isRefreshing = true
+        if (bool && value.result != null) {
 
-        RetrofitInstance.getRegisterRetrofit(
-            INDIMaster.api().register(
+            serverOtp = value.result.toString()
+
+            val register = Register(
                 binding.phone.editText!!.text.toString(),
                 binding.fullName.editText!!.text.toString(),
-                binding.category.editText!!.text.toString(),
+                categoryText,
                 binding.email.editText!!.text.toString(),
                 binding.curAddress.editText!!.text.toString(),
-                binding.password.editText!!.text.toString(),
-                0
-            ),
-            register
-        )
+                binding.perAddress.editText!!.text.toString(),
+                binding.password.editText!!.text.toString()
+            )
+
+            dialog.dismiss()
+
+            val intent = Intent(this, OTPActivity::class.java)
+            intent.putExtra("GSON", Gson().toJson(register))
+            intent.putExtra("Otp", serverOtp)
+            startActivity(intent)
+
+        } else {
+            dialog.dismiss()
+            Toast.makeText(this, value.message, Toast.LENGTH_LONG).show()
+        }
     }
 
-    private val register = { _:Int, bool:Boolean, value:String ->
-
-        binding.swipe.isRefreshing = false
-
-        if(bool){
-
-            Toast.makeText(this, "Registered successfully", Toast.LENGTH_LONG).show()
-
-            startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
-            finish()
-        }
-        else{
-            Toast.makeText(this, value, Toast.LENGTH_LONG).show()
+    override fun onDestroy() {
+        super.onDestroy()
+        if (dialog.isShowing){
+            dialog.dismiss()
         }
     }
 }

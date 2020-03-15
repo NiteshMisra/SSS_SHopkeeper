@@ -1,7 +1,9 @@
 package `in`.indilabz.sss_shopkeeper.rest
 
+import `in`.indilabz.sss_shopkeeper.response.CategoryResponse
 import `in`.indilabz.sss_shopkeeper.response.LoginResponse
 import `in`.indilabz.sss_shopkeeper.response.RegisterResponse
+import `in`.indilabz.sss_shopkeeper.response.UpdateResponse
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -12,60 +14,81 @@ import retrofit2.http.*
 interface API {
 
     @FormUrlEncoded
-    @POST("api/api/shop")
+    @POST("shop/")
     fun register(
-        @Field("contact_number") contact_number: String,
-        @Field("full-name") full_name: String,
+        @Field("phone") contact_number: String,
+        @Field("name") full_name: String,
         @Field("category") category: String,
         @Field("email") email: String,
         @Field("current_address") current_address: String,
-        @Field("password") password: String,
-        @Field("discount") discount: Int
+        @Field("permanent_address") permanent_address: String,
+        @Field("password") password: String
     ): Call<RegisterResponse>
 
     @FormUrlEncoded
-    @POST("admin")
+    @POST("auth/shop")
     fun login(
-        @Field("username") contact_number: String,
-        @Field("password") password: String,
-        @Field("from") from: String,
-        @Field("user_type") user_type: String
+        @Field("email") email: String,
+        @Field("password") password: String
     ): Call<LoginResponse>
 
     @FormUrlEncoded
-    @POST("api/api/discountupdate")
-    fun updateAmount(
-        @Field("shop_id") shop_id: String,
-        @Field("discount") discount: String
-    ): Call<String>
+    @POST("otp/")
+    fun sendOtp(
+        @Field("phone") contact_number: String
+    ): Call<UpdateResponse>
+
+    @GET("category/")
+    fun getCategory(): Call<CategoryResponse>
 
     @FormUrlEncoded
-    @POST("api/api/discountlog")
+    @POST("discounts/availed")
     fun discountLog(
-        @Field("student_id") student_id: String,
-        @Field("shop_id") shop_id: String,
-        @Field("amount") amount: String,
-        @Field("discount") discount: Int,
-        @Field("total_discount") total_discount: Int
-    ): Call<String>
-
-    @GET("api/api/gettotaldiscount/{id}")
-    fun totalDiscount(
-        @Path("id") shop_id: String
-    ): Call<String>
-
-    @GET("api/api/shop/{id}")
-    fun profile(
-        @Path("id") contact_number: String
-    ): Call<String>
+        @Field("id") id: String,
+        @Field("student") student_id: String,
+        @Field("shop") shop_id : String,
+        @Field("amount") amount : String
+    ): Call<UpdateResponse>
 
     @FormUrlEncoded
-    @POST("api/api/shopupdate")
-    fun update(
-        @Field("id") id: String,
-        @Field("name") fullName: String,
-        @Field("contact_number") phone: String,
-        @Field("category") course: String,
+    @POST("shop/update/{id}")
+    fun updateName(
+        @Path("id") id: String,
+        @Field("name") name : String
+    ): Call<UpdateResponse>
+
+    @FormUrlEncoded
+    @POST("shop/forgot")
+    fun forgotPassword(
+        @Field("phone") phone: String,
+        @Field("password") password : String
+    ): Call<UpdateResponse>
+
+    @FormUrlEncoded
+    @POST("shop/update/{id}")
+    fun updatePhone(
+        @Path("id") id: String,
+        @Field("phone") phone : String
+    ): Call<UpdateResponse>
+
+    @FormUrlEncoded
+    @POST("shop/update/{id}")
+    fun updateImage(
+        @Path("id") id: String,
+        @Field("shop_image") phone : String
+    ): Call<UpdateResponse>
+
+    @FormUrlEncoded
+    @POST("shop/update/{id}")
+    fun updateCategory(
+        @Path("id") id: String,
+        @Field("category") category: String
+    ): Call<UpdateResponse>
+
+    @FormUrlEncoded
+    @POST("shop/update/{id}")
+    fun updateAddress(
+        @Path("id") id: String,
         @Field("current_address") address: String
-    ): Call<String>
+    ): Call<UpdateResponse>
 }

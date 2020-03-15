@@ -8,20 +8,27 @@ import `in`.indilabz.sss_shopkeeper.response.LoginResponse
 import `in`.indilabz.sss_shopkeeper.utils.Toaster
 import `in`.indilabz.sss_shopkeeper.rest.RetrofitInstance
 import `in`.indilabz.sss_shopkeeper.utils.INDIPreferences
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import dmax.dialog.SpotsDialog
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityLoginBinding
+    private lateinit var dialog: AlertDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
+        dialog = SpotsDialog.Builder().setContext(this).build()
 
+        binding.forgotPassword.setOnClickListener {
+            startActivity(Intent(this,ForgotPassword::class.java))
+        }
 
         findViewById<Button>(R.id.submit).setOnClickListener {
 
@@ -29,12 +36,12 @@ class LoginActivity : AppCompatActivity() {
 
                 if(binding.password.editText!!.text.length>4){
 
+                    dialog.show()
+
                     RetrofitInstance.getLoginRetrofit(
                         INDIMaster.api().login(
                             binding.email.editText!!.text.toString(),
-                            binding.password.editText!!.text.toString(),
-                            "app",
-                            "shop"
+                            binding.password.editText!!.text.toString()
                         ),login)
                 }
                 else{
@@ -58,40 +65,35 @@ class LoginActivity : AppCompatActivity() {
 
     private val login = {  bool: Boolean, value:LoginResponse ->
 
+        dialog.dismiss()
         if(bool){
 
             try{
 
-                if(value.loginStatus){
+                val loginresult = value.loginResult
+                if(value.success && loginresult != null){
+                    val shopResponse = Shop(loginresult.id,loginresult.name,loginresult.email,loginresult.phone,loginresult.password,loginresult.category.toString(),loginresult.currentAddress,"")
 
-                    val shopResponse = Shop(value.userId,value.userName,value.name,value.userImage,value.uniqueId,value.category,value.shopPId,value.discount,null,value.currentAddress,value.loginStatus)
-                    if((shopResponse.shop_p_id.toInt())>0){
-
-                        INDIPreferences.shop(shopResponse)
-                        INDIPreferences.session(true)
-                        startActivity(Intent(this, MainActivity::class.java))
-                        finish()
-                    }
-                    else{
-                        INDIPreferences.session(false)
-                        Toaster.longt("Invalid login!2")
-                    }
+                    INDIPreferences.shop(shopResponse)
+                    INDIPreferences.session(true)
+                    startActivity(Intent(this, MainActivity::class.java))
+                    finish()
                 }
                 else{
                     INDIPreferences.session(false)
-                    Toaster.longt(value.error)
+                    //Toaster.longt(value.message)
                 }
 
             }catch (e: Exception){
 
                 INDIPreferences.session(false)
-                Toaster.longt(e.message!!)
+                //Toaster.longt(e.message!!)
             }
         }
         else{
 
-            if (value.error!= null){
-                Toaster.longt(value.error)
+            if (value.message != null) {
+                Toaster.longt(value.message)
             }
         }
     }

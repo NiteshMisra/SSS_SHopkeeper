@@ -1,28 +1,25 @@
 package `in`.indilabz.sss_shopkeeper.rest
 
 import `in`.indilabz.review_application.rest.ModelAPIError
-import `in`.indilabz.sss_shopkeeper.utils.Constants
 import `in`.indilabz.sss_shopkeeper.INDIMaster
 import `in`.indilabz.sss_shopkeeper.activity.SplashActivity
+import `in`.indilabz.sss_shopkeeper.response.CategoryResponse
 import `in`.indilabz.sss_shopkeeper.response.LoginResponse
 import `in`.indilabz.sss_shopkeeper.response.RegisterResponse
+import `in`.indilabz.sss_shopkeeper.response.UpdateResponse
+import `in`.indilabz.sss_shopkeeper.utils.Constants
 import `in`.indilabz.sss_shopkeeper.utils.INDIPreferences
-import `in`.indilabz.sss_shopkeeper.utils.Toaster
 import android.content.Intent
 import android.os.AsyncTask
-
-import java.util.concurrent.TimeUnit
-
 import android.util.Log
 import okhttp3.OkHttpClient
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
-
+import java.util.concurrent.TimeUnit
 
 class RetrofitInstance : Constants {
 
@@ -124,7 +121,7 @@ class RetrofitInstance : Constants {
 
     }
 
-    private class RegisterRetrofitAPI (private val retrofitListener: (Int, Boolean, String) -> Unit?, calls: Call<RegisterResponse>?) : AsyncTask<String, String, String>() {
+    private class RegisterRetrofitAPI (private val retrofitListener: (Int, Boolean, RegisterResponse) -> Unit?, calls: Call<RegisterResponse>?) : AsyncTask<String, String, String>() {
 
         init {
             registerCall = calls
@@ -142,16 +139,17 @@ class RetrofitInstance : Constants {
 
                             //Log.d("TAG_RETROFIT_RESULT", response.body()!!)
 
-                            if (response.body()!!.responseCode == 200){
-                                retrofitListener.invoke(response.code(), true, response.body()!!.responseMessage)
+                            val registerResponse = response.body()!!
+                            if (registerResponse.success){
+                                retrofitListener.invoke(response.code(), true,registerResponse)
                             }else{
-                                retrofitListener.invoke(response.code(), false, response.body()!!.contactNumber)
+                                retrofitListener.invoke(response.code(), false, registerResponse)
                             }
                         } catch (e: Exception) {
 
                             Log.d("TAG_RETROFIT_ERROR", e.toString())
 
-                            retrofitListener.invoke(response.code(), false, "Error while getting data")
+                            retrofitListener.invoke(response.code(), false, response.body()!!)
                         }
 
                     } else {
@@ -180,16 +178,14 @@ class RetrofitInstance : Constants {
 
                             } else {
 
-                                retrofitListener.invoke(response.code(),
-                                    false, apiError.error!!)
+                                retrofitListener.invoke(response.code(), false, RegisterResponse(false,apiError.error,null))
                             }
                         } catch (e: Exception) {
 
                             /// Log.d("TAG_EXCEPTION_ERROR", e.toString())
 
                             try{
-                                retrofitListener.invoke(response.code(),
-                                    false, "Error while fetching data!")
+                                retrofitListener.invoke(response.code(), false, RegisterResponse(false,e.message,null))
                             }
                             catch (e : Exception){
                                 e.printStackTrace()
@@ -204,7 +200,110 @@ class RetrofitInstance : Constants {
 
                     //Log.d("TAG_RETROFIT_THROW", t.message)
                     try{
-                        retrofitListener.invoke(404, false, "Please check your internet connection")
+                        retrofitListener.invoke(404, false, RegisterResponse(false,"Please check your internet connection",null))
+                    }catch (e : Exception){
+                        e.printStackTrace()
+                    }
+                    //Toaster.LongToast("Unable to connect to internet");
+                }
+            })
+
+            return null
+        }
+
+
+        override fun onPostExecute(result: String?) {
+
+        }
+
+        override fun onPreExecute() {
+
+        }
+
+    }
+
+    private class CategoryRetrofitAPI (private val retrofitListener: (Int, Boolean, CategoryResponse) -> Unit?, calls: Call<CategoryResponse>?) : AsyncTask<String, String, String>() {
+
+        init {
+            categoryCall = calls
+        }
+
+        override fun doInBackground(vararg params: String?): String? {
+
+            categoryCall!!.clone().enqueue(object : Callback<CategoryResponse> {
+
+                override fun onResponse(call: Call<CategoryResponse>?, response: Response<CategoryResponse>?) {
+
+                    if (response!!.isSuccessful) {
+
+                        try {
+
+                            //Log.d("TAG_RETROFIT_RESULT", response.body()!!)
+
+                            val categoryResponse = response.body()!!
+                            if (categoryResponse.success){
+                                retrofitListener.invoke(response.code(), true,categoryResponse)
+                            }else{
+                                retrofitListener.invoke(response.code(), false, categoryResponse)
+                            }
+                        } catch (e: Exception) {
+
+                            Log.d("TAG_RETROFIT_ERROR", e.toString())
+
+                            retrofitListener.invoke(response.code(), false, response.body()!!)
+                        }
+
+                    } else {
+
+                        try {
+                            Log.d("TAG_REAL_ERROR", response.errorBody()!!.string())
+                        } catch (e: Exception) {
+
+                            Log.d("TAG_REAL_ERROR_EX", e.message!!)
+                        }
+
+                        try {
+
+                            //Toaster.longToast(response.errorBody()!!.string())
+
+                            val apiError = INDIMaster.gson.fromJson(response.errorBody()!!.string(), ModelAPIError::class.java)
+
+                            if (apiError.error == "AUTH_ERROR") {
+
+                                if (INDIPreferences.preferenceEditor().clear().commit()) {
+
+                                    INDIMaster.applicationContext().startActivity(Intent(INDIMaster.applicationContext(), SplashActivity::class.java))
+                                    INDIPreferences.session(false)
+                                    INDIPreferences.backpress(false)
+                                }
+
+                            } else {
+
+                                retrofitListener.invoke(response.code(), false,
+                                    CategoryResponse(false,apiError.error,null)
+                                )
+                            }
+                        } catch (e: Exception) {
+
+                            /// Log.d("TAG_EXCEPTION_ERROR", e.toString())
+
+                            try{
+                                retrofitListener.invoke(response.code(), false, CategoryResponse(false,e.message,null))
+                            }
+                            catch (e : Exception){
+                                e.printStackTrace()
+                            }
+                        }
+
+                    }
+
+                }
+
+                override fun onFailure(call: Call<CategoryResponse>, t: Throwable) {
+
+                    //Log.d("TAG_RETROFIT_THROW", t.message)
+                    try{
+                        retrofitListener.invoke(404, false, CategoryResponse(false,"Please check your internet connection",null))
                     }catch (e : Exception){
                         e.printStackTrace()
                     }
@@ -244,24 +343,333 @@ class RetrofitInstance : Constants {
 
                             val loginResponse = response.body()!!
 
-                            if (loginResponse.loginStatus){
-                                retrofitListener.invoke(true, response.body()!!)
+                            if (loginResponse.success){
+                                retrofitListener.invoke(true, loginResponse)
                             }else{
 
-                                val loginResponse2 = LoginResponse("","","","",
-                                    "","","","",
-                                    "","",false,response.body()!!.error)
-
-                                retrofitListener.invoke(false, loginResponse2)
+                                retrofitListener.invoke(false, loginResponse)
                             }
 
                         } catch (e: Exception) {
 
-                            val loginResponse = LoginResponse("","","","",
-                                "","","","",
-                                "","",false,e.message)
+                            retrofitListener.invoke(false, response.body()!!)
+                        }
 
-                            retrofitListener.invoke(false, loginResponse)
+                    } else {
+
+                        try {
+                            Log.d("TAG_REAL_ERROR", response.errorBody()!!.string())
+                        } catch (e: Exception) {
+
+                            Log.d("TAG_REAL_ERROR_EX", e.message!!)
+                        }
+
+                        /*try {
+
+                            //Toaster.longToast(response.errorBody()!!.string())
+
+                            val apiError = INDIMaster.gson.fromJson(response.errorBody()!!.string(), ModelAPIError::class.java)
+
+                            if (apiError.error == "AUTH_ERROR") {
+
+                                if (INDIPreferences.preferenceEditor().clear().commit()) {
+
+                                    INDIMaster.applicationContext().startActivity(Intent(INDIMaster.applicationContext(), SplashActivity::class.java))
+                                    INDIPreferences.session(false)
+                                    INDIPreferences.backpress(false)
+                                }
+
+                            } else {
+
+                                val loginResponse = LoginResponse(false,apiError.error,null)
+                                retrofitListener.invoke(false, loginResponse)
+                            }
+                        } catch (e: Exception) {
+
+                            /// Log.d("TAG_EXCEPTION_ERROR", e.toString())
+
+                            try{
+
+                                val loginResponse = LoginResponse(false,e.message,null)
+                                retrofitListener.invoke(false,loginResponse)
+                            }
+                            catch (e : Exception){
+                                e.printStackTrace()
+                            }
+                        }*/
+
+                    }
+
+                }
+
+                override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+
+                    //Log.d("TAG_RETROFIT_THROW", t.message)
+                    try{
+
+                        val loginResponse = LoginResponse(false,t.message,null)
+                        retrofitListener.invoke(false, loginResponse)
+
+                    }catch (e : Exception){
+                        e.printStackTrace()
+                    }
+                    //Toaster.LongToast("Unable to connect to internet");
+                }
+            })
+
+            return null
+        }
+
+
+        override fun onPostExecute(result: String?) {
+
+        }
+
+        override fun onPreExecute() {
+
+        }
+
+    }
+
+    private class OtpRetrofitAPI (private val retrofitListener: (Int, Boolean, UpdateResponse) -> Unit?, calls: Call<UpdateResponse>?) : AsyncTask<String, String, String>() {
+
+        init {
+            updateCall = calls
+        }
+
+        override fun doInBackground(vararg params: String?): String? {
+
+            updateCall!!.clone().enqueue(object : Callback<UpdateResponse> {
+
+                override fun onResponse(call: Call<UpdateResponse>?, response: Response<UpdateResponse>?) {
+
+                    if (response!!.isSuccessful) {
+
+                        try {
+
+                            //Log.d("TAG_RETROFIT_RESULT", response.body()!!)
+
+                            val loginResponse = response.body()!!
+
+                            if (loginResponse.success){
+                                retrofitListener.invoke(response.code(), true, loginResponse)
+                            }else{
+                                retrofitListener.invoke(response.code(), false, loginResponse)
+                            }
+                        } catch (e: Exception) {
+
+                            Log.d("TAG_RETROFIT_ERROR", e.toString())
+                            retrofitListener.invoke(response.code(), false, response.body()!!)
+                        }
+
+                    } else {
+
+                        Log.e("login",response.body()!!.toString())
+
+                        try {
+                            Log.d("TAG_REAL_ERROR", response.errorBody()!!.string())
+                        } catch (e: Exception) {
+
+                            Log.d("TAG_REAL_ERROR_EX", e.message!!)
+                        }
+
+                        try {
+
+                            //Toaster.longToast(response.errorBody()!!.string())
+
+                            val apiError = INDIMaster.gson.fromJson(response.errorBody()!!.string(), ModelAPIError::class.java)
+
+                            if (apiError.error == "AUTH_ERROR") {
+
+                                if (INDIPreferences.preferenceEditor().clear().commit()) {
+
+                                    INDIMaster.applicationContext().startActivity(Intent(INDIMaster.applicationContext(), SplashActivity::class.java))
+                                    INDIPreferences.session(false)
+                                    INDIPreferences.backpress(false)
+                                }
+
+                            } else {
+
+                                retrofitListener.invoke(response.code(), false, response.body()!!)
+                            }
+                        } catch (e: Exception) {
+
+                            /// Log.d("TAG_EXCEPTION_ERROR", e.toString())
+
+                            try{
+                                retrofitListener.invoke(response.code(), false, response.body()!!)
+                            }
+                            catch (e : Exception){
+                                e.printStackTrace()
+                            }
+                        }
+
+                    }
+
+                }
+
+                override fun onFailure(call: Call<UpdateResponse>, t: Throwable) {
+
+                    //Log.d("TAG_RETROFIT_THROW", t.message)
+                    try{
+                        val updateResponse = UpdateResponse(false,"",t.message,null)
+                        retrofitListener.invoke(404, false, updateResponse)
+
+                    }catch (e : Exception){
+                        e.printStackTrace()
+                    }
+                    //Toaster.LongToast("Unable to connect to internet");
+                }
+            })
+
+            return null
+        }
+
+
+        override fun onPostExecute(result: String?) {
+
+        }
+
+        override fun onPreExecute() {
+
+        }
+
+    }
+
+    private class AvailedRetrofitAPI (private val retrofitListener: (Int, Boolean, UpdateResponse) -> Unit?, calls: Call<UpdateResponse>?) : AsyncTask<String, String, String>() {
+
+        init {
+            updateCall = calls
+        }
+
+        override fun doInBackground(vararg params: String?): String? {
+
+            updateCall!!.clone().enqueue(object : Callback<UpdateResponse> {
+
+                override fun onResponse(call: Call<UpdateResponse>?, response: Response<UpdateResponse>?) {
+
+                    if (response!!.isSuccessful) {
+
+                        try {
+
+                            //Log.d("TAG_RETROFIT_RESULT", response.body()!!)
+
+                            val loginResponse = response.body()!!
+
+                            if (loginResponse.success){
+                                retrofitListener.invoke(response.code(), true, loginResponse)
+                            }else{
+                                retrofitListener.invoke(response.code(), false, loginResponse)
+                            }
+                        } catch (e: Exception) {
+
+                            Log.d("TAG_RETROFIT_ERROR", e.toString())
+                            retrofitListener.invoke(response.code(), false, response.body()!!)
+                        }
+
+                    } else {
+
+                        Log.e("login",response.body()!!.toString())
+
+                        try {
+                            Log.d("TAG_REAL_ERROR", response.errorBody()!!.string())
+                        } catch (e: Exception) {
+
+                            Log.d("TAG_REAL_ERROR_EX", e.message!!)
+                        }
+
+                        try {
+
+                            //Toaster.longToast(response.errorBody()!!.string())
+
+                            val apiError = INDIMaster.gson.fromJson(response.errorBody()!!.string(), ModelAPIError::class.java)
+
+                            if (apiError.error == "AUTH_ERROR") {
+
+                                if (INDIPreferences.preferenceEditor().clear().commit()) {
+
+                                    INDIMaster.applicationContext().startActivity(Intent(INDIMaster.applicationContext(), SplashActivity::class.java))
+                                    INDIPreferences.session(false)
+                                    INDIPreferences.backpress(false)
+                                }
+
+                            } else {
+
+                                retrofitListener.invoke(response.code(), false, response.body()!!)
+                            }
+                        } catch (e: Exception) {
+
+                            /// Log.d("TAG_EXCEPTION_ERROR", e.toString())
+
+                            try{
+                                retrofitListener.invoke(response.code(), false, response.body()!!)
+                            }
+                            catch (e : Exception){
+                                e.printStackTrace()
+                            }
+                        }
+
+                    }
+
+                }
+
+                override fun onFailure(call: Call<UpdateResponse>, t: Throwable) {
+
+                    //Log.d("TAG_RETROFIT_THROW", t.message)
+                    try{
+                        val updateResponse = UpdateResponse(false,t.message,"",null)
+                        retrofitListener.invoke(404, false, updateResponse)
+
+                    }catch (e : Exception){
+                        e.printStackTrace()
+                    }
+                    //Toaster.LongToast("Unable to connect to internet");
+                }
+            })
+
+            return null
+        }
+
+
+        override fun onPostExecute(result: String?) {
+
+        }
+
+        override fun onPreExecute() {
+
+        }
+
+    }
+
+    private class UpdateRetrofitAPI (private val retrofitListener: (Int, Boolean, UpdateResponse) -> Unit?, calls: Call<UpdateResponse>?) : AsyncTask<String, String, String>() {
+
+        init {
+            updateCall = calls
+        }
+
+        override fun doInBackground(vararg params: String?): String? {
+
+            updateCall!!.clone().enqueue(object : Callback<UpdateResponse> {
+
+                override fun onResponse(call: Call<UpdateResponse>?, response: Response<UpdateResponse>?) {
+
+                    if (response!!.isSuccessful) {
+
+                        try {
+
+                            //Log.d("TAG_RETROFIT_RESULT", response.body()!!)
+
+                            val updateResponse = response.body()!!
+                            if (updateResponse.success){
+                                retrofitListener.invoke(response.code(), true, updateResponse)
+                            }else{
+                                retrofitListener.invoke(response.code(), false, updateResponse)
+                            }
+                        } catch (e: Exception) {
+
+                            Log.d("TAG_RETROFIT_ERROR", e.toString())
+
+                            retrofitListener.invoke(response.code(), false, response.body()!!)
                         }
 
                     } else {
@@ -290,21 +698,14 @@ class RetrofitInstance : Constants {
 
                             } else {
 
-                                val loginResponse = LoginResponse("","","","",
-                                    "","","","",
-                                    "","",false,apiError.error)
-                                retrofitListener.invoke(false, loginResponse)
+                                retrofitListener.invoke(response.code(), false,UpdateResponse(false,apiError.error!!,"",null))
                             }
                         } catch (e: Exception) {
 
                             /// Log.d("TAG_EXCEPTION_ERROR", e.toString())
 
                             try{
-
-                                val loginResponse = LoginResponse("","","","",
-                                    "","","","",
-                                    "","",false,e.message)
-                                retrofitListener.invoke(false,loginResponse)
+                                retrofitListener.invoke(response.code(), false,UpdateResponse(false,"Error while fetching data!","",null))
                             }
                             catch (e : Exception){
                                 e.printStackTrace()
@@ -315,18 +716,11 @@ class RetrofitInstance : Constants {
 
                 }
 
-                override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                override fun onFailure(call: Call<UpdateResponse>, t: Throwable) {
 
                     //Log.d("TAG_RETROFIT_THROW", t.message)
                     try{
-
-                        val loginResponse = LoginResponse("","","","",
-                            "","","","",
-                        "","",false,t.message)
-
-                        Toaster.longt(t.message.toString())
-
-                        retrofitListener.invoke(false, loginResponse)
+                        retrofitListener.invoke(404, false,UpdateResponse(false,"Please check your internet connection","",null))
                     }catch (e : Exception){
                         e.printStackTrace()
                     }
@@ -354,7 +748,9 @@ class RetrofitInstance : Constants {
         private var retrofit: Retrofit? = null
         private var client: OkHttpClient? = null
         private var call: Call<String>? = null
+        private var updateCall : Call<UpdateResponse>? = null
         private var registerCall: Call<RegisterResponse>? = null
+        private var categoryCall: Call<CategoryResponse>? = null
         private var loginCall: Call<LoginResponse>? = null
 
         fun instance(): Retrofit {
@@ -409,12 +805,28 @@ class RetrofitInstance : Constants {
             RetrofitAPI(retrofitListener, call).execute()
         }
 
+        fun getAvailedRetrofit(call: Call<UpdateResponse>?, retrofitListener: (Int, Boolean, UpdateResponse) -> Unit?) {
+            AvailedRetrofitAPI(retrofitListener, call).execute()
+        }
+
+        fun getOTPRetrofit(call: Call<UpdateResponse>?, retrofitListener: (Int, Boolean, UpdateResponse) -> Unit?) {
+            OtpRetrofitAPI(retrofitListener, call).execute()
+        }
+
+        fun updateRetrofit(call: Call<UpdateResponse>?, retrofitListener: (Int, Boolean, UpdateResponse) -> Unit?) {
+            UpdateRetrofitAPI(retrofitListener, call).execute()
+        }
+
         fun getLoginRetrofit(call: Call<LoginResponse>?, retrofitListener: (Boolean, LoginResponse) -> Unit?) {
             LoginRetrofitAPI(retrofitListener, call).execute()
         }
 
-        fun getRegisterRetrofit(call: Call<RegisterResponse>?, retrofitListener: (Int, Boolean, String) -> Unit?) {
+        fun getRegisterRetrofit(call: Call<RegisterResponse>?, retrofitListener: (Int, Boolean, RegisterResponse) -> Unit?) {
             RegisterRetrofitAPI(retrofitListener, call).execute()
+        }
+
+        fun getCategoryRetrofit(call: Call<CategoryResponse>?, retrofitListener: (Int, Boolean, CategoryResponse) -> Unit?) {
+            CategoryRetrofitAPI(retrofitListener, call).execute()
         }
     }
 }
