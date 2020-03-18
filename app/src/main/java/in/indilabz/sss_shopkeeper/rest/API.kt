@@ -14,7 +14,7 @@ import retrofit2.http.*
 interface API {
 
     @FormUrlEncoded
-    @POST("shop/")
+    @POST("api/v1/shop/")
     fun register(
         @Field("phone") contact_number: String,
         @Field("name") full_name: String,
@@ -26,19 +26,19 @@ interface API {
     ): Call<RegisterResponse>
 
     @FormUrlEncoded
-    @POST("auth/shop")
+    @POST("api/v1/auth/shop")
     fun login(
         @Field("email") email: String,
         @Field("password") password: String
     ): Call<LoginResponse>
 
     @FormUrlEncoded
-    @POST("otp/")
+    @POST("api/v1/otp/")
     fun sendOtp(
         @Field("phone") contact_number: String
     ): Call<UpdateResponse>
 
-    @GET("category/")
+    @GET("api/v1/category/")
     fun getCategory(): Call<CategoryResponse>
 
     @FormUrlEncoded
@@ -51,42 +51,35 @@ interface API {
     ): Call<UpdateResponse>
 
     @FormUrlEncoded
-    @POST("shop/update/{id}")
+    @POST("api/v1/shop/update/{id}")
     fun updateName(
         @Path("id") id: String,
         @Field("name") name : String
     ): Call<UpdateResponse>
 
     @FormUrlEncoded
-    @POST("shop/forgot")
+    @POST("api/v1/shop/forgot")
     fun forgotPassword(
         @Field("phone") phone: String,
         @Field("password") password : String
     ): Call<UpdateResponse>
 
     @FormUrlEncoded
-    @POST("shop/update/{id}")
+    @POST("api/v1/shop/update/{id}")
     fun updatePhone(
         @Path("id") id: String,
         @Field("phone") phone : String
     ): Call<UpdateResponse>
 
     @FormUrlEncoded
-    @POST("shop/update/{id}")
-    fun updateImage(
-        @Path("id") id: String,
-        @Field("shop_image") phone : String
-    ): Call<UpdateResponse>
-
-    @FormUrlEncoded
-    @POST("shop/update/{id}")
+    @POST("api/v1/shop/update/{id}")
     fun updateCategory(
         @Path("id") id: String,
-        @Field("category") category: String
+        @Field("category") category : Int
     ): Call<UpdateResponse>
 
     @FormUrlEncoded
-    @POST("shop/update/{id}")
+    @POST("api/v1/shop/update/{id}")
     fun updateAddress(
         @Path("id") id: String,
         @Field("current_address") address: String

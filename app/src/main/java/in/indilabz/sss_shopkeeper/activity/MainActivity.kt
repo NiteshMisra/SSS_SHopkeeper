@@ -6,14 +6,18 @@ import `in`.indilabz.sss_shopkeeper.model.Discount
 import `in`.indilabz.sss_shopkeeper.response.UpdateResponse
 import `in`.indilabz.sss_shopkeeper.rest.RetrofitInstance
 import `in`.indilabz.sss_shopkeeper.utils.Toaster
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.text.InputType
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -33,6 +37,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var fab : FloatingActionButton
     private val SCAN_REQUEST_CODE = 1
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -44,6 +49,9 @@ class MainActivity : AppCompatActivity() {
         profile = findViewById(R.id.profile)
         fab = findViewById(R.id.fab)
 
+        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+            requestPermissions(arrayOf(Manifest.permission.CAMERA),1)
+        }
 
         fab.setOnClickListener {
             startActivityForResult(Intent(this,Scan::class.java),SCAN_REQUEST_CODE)

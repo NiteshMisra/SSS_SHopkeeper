@@ -4,7 +4,10 @@ package `in`.indilabz.sss_shopkeeper
 import `in`.indilabz.sss_shopkeeper.rest.API
 import `in`.indilabz.sss_shopkeeper.rest.RetrofitInstance
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
+import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDex
 import androidx.multidex.MultiDexApplication
@@ -12,6 +15,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.request.RequestOptions
 import com.google.gson.GsonBuilder
+import net.gotev.uploadservice.UploadServiceConfig
 import java.security.NoSuchAlgorithmException
 import java.security.SecureRandom
 import java.util.*
@@ -29,6 +33,13 @@ class INDIMaster : MultiDexApplication(){
         //ACRA.init(this);
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         context = this.baseContext
+        createNotificationChannel()
+
+        UploadServiceConfig.initialize(
+            context = this,
+            defaultNotificationChannel = notificationChannelID,
+            debug = BuildConfig.DEBUG
+        )
 
     }
 
@@ -40,6 +51,19 @@ class INDIMaster : MultiDexApplication(){
 
         fun applicationContext() : INDIMaster {
             return instance!!.applicationContext as INDIMaster
+        }
+
+        const val notificationChannelID = "TestChannel"
+
+        private fun createNotificationChannel(){
+            if(Build.VERSION.SDK_INT >= 26){
+                val channel = NotificationChannel(notificationChannelID,
+                    "ShopKeeper App",
+                    NotificationManager.IMPORTANCE_LOW
+                )
+                val manager = applicationContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                manager.createNotificationChannel(channel)
+            }
         }
 
         private val api = RetrofitInstance.instance().create(API::class.java)

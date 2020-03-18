@@ -23,104 +23,6 @@ import java.util.concurrent.TimeUnit
 
 class RetrofitInstance : Constants {
 
-    private class RetrofitAPI (private val retrofitListener: (Int, Boolean, String) -> Unit?, calls: Call<String>?) : AsyncTask<String, String, String>() {
-
-        init {
-            call = calls
-        }
-
-        override fun doInBackground(vararg params: String?): String? {
-
-            call!!.clone().enqueue(object : Callback<String> {
-
-                override fun onResponse(call: Call<String>?, response: Response<String>?) {
-
-                    if (response!!.isSuccessful) {
-
-                        try {
-
-                            Log.d("TAG_RETROFIT_RESULT", response.body()!!)
-
-                            retrofitListener.invoke(response.code(), true, response.body()!!)
-                        } catch (e: Exception) {
-
-                            Log.d("TAG_RETROFIT_ERROR", e.toString())
-
-                            retrofitListener.invoke(response.code(), false, "Error while getting data")
-                        }
-
-                    } else {
-
-                       try {
-                            Log.d("TAG_REAL_ERROR", response.errorBody()!!.string())
-                        } catch (e: Exception) {
-
-                            Log.d("TAG_REAL_ERROR_EX", e.message!!)
-                        }
-
-                        try {
-
-                            //Toaster.longToast(response.errorBody()!!.string())
-
-                            val apiError = INDIMaster.gson.fromJson(response.errorBody()!!.string(), ModelAPIError::class.java)
-
-                            if (apiError.error == "AUTH_ERROR") {
-
-                                if (INDIPreferences.preferenceEditor().clear().commit()) {
-
-                                    INDIMaster.applicationContext().startActivity(Intent(INDIMaster.applicationContext(), SplashActivity::class.java))
-                                    INDIPreferences.session(false)
-                                    INDIPreferences.backpress(false)
-                                }
-
-                            } else {
-
-                                retrofitListener.invoke(response.code(),
-                                        false, apiError.error!!)
-                            }
-                        } catch (e: Exception) {
-
-                           /// Log.d("TAG_EXCEPTION_ERROR", e.toString())
-
-                            try{
-                                retrofitListener.invoke(response.code(),
-                                        false, "Error while fetching data!")
-                            }
-                            catch (e : Exception){
-                                e.printStackTrace()
-                            }
-                        }
-
-                    }
-
-                }
-
-                override fun onFailure(call: Call<String>, t: Throwable) {
-
-                    //Log.d("TAG_RETROFIT_THROW", t.message)
-                    try{
-                        retrofitListener.invoke(404, false, "Please check your internet connection")
-                    }catch (e : Exception){
-                        e.printStackTrace()
-                    }
-                    //Toaster.LongToast("Unable to connect to internet");
-                }
-            })
-
-            return null
-        }
-
-
-        override fun onPostExecute(result: String?) {
-
-        }
-
-        override fun onPreExecute() {
-
-        }
-
-    }
-
     private class RegisterRetrofitAPI (private val retrofitListener: (Int, Boolean, RegisterResponse) -> Unit?, calls: Call<RegisterResponse>?) : AsyncTask<String, String, String>() {
 
         init {
@@ -747,7 +649,6 @@ class RetrofitInstance : Constants {
 
         private var retrofit: Retrofit? = null
         private var client: OkHttpClient? = null
-        private var call: Call<String>? = null
         private var updateCall : Call<UpdateResponse>? = null
         private var registerCall: Call<RegisterResponse>? = null
         private var categoryCall: Call<CategoryResponse>? = null
@@ -799,10 +700,6 @@ class RetrofitInstance : Constants {
                     .build()
 
             return retrofit as Retrofit
-        }
-
-        fun getRetrofit(call: Call<String>?, retrofitListener: (Int, Boolean, String) -> Unit?) {
-            RetrofitAPI(retrofitListener, call).execute()
         }
 
         fun getAvailedRetrofit(call: Call<UpdateResponse>?, retrofitListener: (Int, Boolean, UpdateResponse) -> Unit?) {
