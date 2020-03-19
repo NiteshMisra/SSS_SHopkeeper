@@ -9,150 +9,199 @@
         android:layout_height="match_parent"
         tools:context=".activity.RegisterActivity">
 
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/swipe"
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/submit">
+            android:overScrollMode="never"
+            android:scrollbars="none"
+            android:layout_above="@id/submit"
+            android:layout_height="match_parent">
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_alignParentTop="true">
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:orientation="vertical">
 
-                <androidx.core.widget.NestedScrollView
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/owner_name"
                     android:layout_width="match_parent"
-                    android:overScrollMode="never"
-                    android:layout_height="match_parent">
+                    android:layout_height="wrap_content"
+                    android:hint="Shop Owner Name"
+                    android:textColorHint="#5A5959"
+                    android:layout_marginTop="20dp">
 
-                    <LinearLayout
+                    <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:paddingStart="15dp"
-                        android:paddingEnd="15dp"
-                        android:orientation="vertical">
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:textSize="15sp"
+                        android:fontFamily="@font/poppins"
+                        android:textColor="@color/black"/>
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/phone"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Phone number"
-                            android:textColorHint="#5A5959"
-                            android:layout_marginTop="20dp">
+                </com.google.android.material.textfield.TextInputLayout>
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:inputType="phone"
-                                android:textSize="15sp"
-                                android:fontFamily="@font/poppins"
-                                android:textColor="@color/black"/>
+                <Spinner
+                    android:id="@+id/gender"
+                    android:layout_width="match_parent"
+                    android:padding="10dp"
+                    android:background="@drawable/rect_gray"
+                    android:layout_marginTop="10dp"
+                    android:layout_height="wrap_content"/>
 
-                        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Phone number"
+                    android:layout_marginTop="5dp"
+                    android:textColorHint="#5A5959">
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/fullName"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Full name"
-                            android:textColorHint="#5A5959">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="phone"
+                        android:textSize="15sp"
+                        android:fontFamily="@font/poppins"
+                        android:textColor="@color/black"/>
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:inputType="textPersonName"
-                                android:fontFamily="@font/poppins"
-                                android:textSize="15sp"
-                                android:textColor="@color/black"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
-                        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Email"
+                    android:textColorHint="#5A5959">
 
-                        <Spinner
-                            android:layout_width="match_parent"
-                            android:id="@+id/category"
-                            android:padding="10dp"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginBottom="5dp"
-                            android:background="@drawable/rect_gray"
-                            android:layout_height="wrap_content"/>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress"
+                        android:fontFamily="@font/poppins"
+                        android:textSize="15sp"
+                        android:textColor="@color/black"/>
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/email"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Email"
-                            android:textColorHint="#5A5959">
+                </com.google.android.material.textfield.TextInputLayout>
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:inputType="textEmailAddress"
-                                android:fontFamily="@font/poppins"
-                                android:textSize="15sp"
-                                android:textColor="@color/black"/>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/fullName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Shop name"
+                    android:textColorHint="#5A5959">
 
-                        </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName"
+                        android:fontFamily="@font/poppins"
+                        android:textSize="15sp"
+                        android:textColor="@color/black"/>
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/curAddress"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Current address"
-                            android:textColorHint="#5A5959">
+                </com.google.android.material.textfield.TextInputLayout>
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textSize="15sp"
-                                android:fontFamily="@font/poppins"
-                                android:inputType="textPostalAddress"
-                                android:textColor="@color/black"/>
+                <Spinner
+                    android:layout_width="match_parent"
+                    android:id="@+id/category"
+                    android:padding="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="5dp"
+                    android:background="@drawable/rect_gray"
+                    android:layout_height="wrap_content"/>
 
-                        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/curAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Current address"
+                    android:textColorHint="#5A5959">
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/perAddress"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Permanent address"
-                            android:textColorHint="#5A5959">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:fontFamily="@font/poppins"
+                        android:inputType="textPostalAddress"
+                        android:textColor="@color/black"/>
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textSize="15sp"
-                                android:fontFamily="@font/poppins"
-                                android:inputType="textPostalAddress"
-                                android:textColor="@color/black"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
-                        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/perAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Permanent address"
+                    android:textColorHint="#5A5959">
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/password"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Password"
-                            android:textColorHint="#5A5959">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:fontFamily="@font/poppins"
+                        android:inputType="textPostalAddress"
+                        android:textColor="@color/black"/>
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:inputType="textPassword"
-                                android:textSize="15sp"
-                                android:maxLength="12"
-                                android:fontFamily="@font/poppins"
-                                android:textColor="@color/black"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
-                        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/pinCode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Pincode"
+                    android:textColorHint="#5A5959">
 
-                    </LinearLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="15sp"
+                        android:fontFamily="@font/poppins"
+                        android:inputType="phone"
+                        android:textColor="@color/black"/>
 
+                </com.google.android.material.textfield.TextInputLayout>
 
-                </androidx.core.widget.NestedScrollView>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Password"
+                    app:passwordToggleEnabled="true"
+                    android:textColorHint="#5A5959">
 
-            </RelativeLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:textSize="15sp"
+                        android:maxLength="12"
+                        android:fontFamily="@font/poppins"
+                        android:textColor="@color/black"/>
 
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/confirm_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:passwordToggleEnabled="true"
+                    android:hint="Confirm Password"
+                    android:textColorHint="#5A5959">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:textSize="15sp"
+                        android:maxLength="12"
+                        android:fontFamily="@font/poppins"
+                        android:textColor="@color/black"/>
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/submit"

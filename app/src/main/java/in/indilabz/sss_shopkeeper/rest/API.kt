@@ -22,7 +22,10 @@ interface API {
         @Field("email") email: String,
         @Field("current_address") current_address: String,
         @Field("permanent_address") permanent_address: String,
-        @Field("password") password: String
+        @Field("password") password: String,
+        @Field("pincode") pincode: String,
+        @Field("gender") gender : String,
+        @Field("owner_name") ownerName : String
     ): Call<RegisterResponse>
 
     @FormUrlEncoded
@@ -55,6 +58,27 @@ interface API {
     fun updateName(
         @Path("id") id: String,
         @Field("name") name : String
+    ): Call<UpdateResponse>
+
+    @FormUrlEncoded
+    @POST("api/v1/shop/update/{id}")
+    fun updateOwnerName(
+        @Path("id") id: String,
+        @Field("owner_name") name : String
+    ): Call<UpdateResponse>
+
+    @FormUrlEncoded
+    @POST("api/v1/shop/update/{id}")
+    fun updateGender(
+        @Path("id") id: String,
+        @Field("gender") gender : String
+    ): Call<UpdateResponse>
+
+    @FormUrlEncoded
+    @POST("api/v1/shop/update/{id}")
+    fun updatePinCode(
+        @Path("id") id: String,
+        @Field("pincode") name : String
     ): Call<UpdateResponse>
 
     @FormUrlEncoded

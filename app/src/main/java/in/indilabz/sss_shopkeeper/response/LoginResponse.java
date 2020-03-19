@@ -12,13 +12,17 @@ public class LoginResponse {
     @SerializedName("message")
     private String message;
 
+    @SerializedName("error")
+    private String error;
+
     @Nullable
     @SerializedName("result")
     private LoginResult loginResult;
 
-    public LoginResponse(Boolean success, String message, @Nullable LoginResult loginResult) {
+    public LoginResponse(Boolean success, String message, String error, @Nullable LoginResult loginResult) {
         this.success = success;
         this.message = message;
+        this.error = error;
         this.loginResult = loginResult;
     }
 
@@ -28,6 +32,10 @@ public class LoginResponse {
 
     public String getMessage() {
         return message;
+    }
+
+    public String getError() {
+        return error;
     }
 
     @Nullable

@@ -9,8 +9,11 @@ public class Register {
     private String currentAddress;
     private String perAddress;
     private String password;
+    private String pincode;
+    private String gender;
+    private String ownerName;
 
-    public Register(String phone, String fullName, String categoryText, String email, String currentAddress, String perAddress, String password) {
+    public Register(String phone, String fullName, String categoryText, String email, String currentAddress, String perAddress, String password, String pincode, String gender, String ownerName) {
         this.phone = phone;
         this.fullName = fullName;
         this.categoryText = categoryText;
@@ -18,6 +21,9 @@ public class Register {
         this.currentAddress = currentAddress;
         this.perAddress = perAddress;
         this.password = password;
+        this.pincode = pincode;
+        this.gender = gender;
+        this.ownerName = ownerName;
     }
 
     public String getPhone() {
@@ -46,5 +52,17 @@ public class Register {
 
     public String getPassword() {
         return password;
+    }
+
+    public String getPincode() {
+        return pincode;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
     }
 }

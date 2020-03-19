@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">SSS Shopkeeper</string>
     <string name="title_activity_main">MainActivity</string>
+    <string-array name="genderArray">
+        <item>Select Gender</item>
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
 </resources>

@@ -28,16 +28,16 @@ import net.gotev.uploadservice.protocols.multipart.MultipartUploadRequest
 import java.io.ByteArrayOutputStream
 
 @Suppress("DEPRECATION")
-class ProfileActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener {
+class ProfileActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
 
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        if (position != 0 && firstTime > 0){
+        if (position != 0 && firstTime > 0) {
             updateCategory(position)
-        }else{
+        } else {
             firstTime++
         }
     }
@@ -45,7 +45,7 @@ class ProfileActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener {
     private lateinit var binding: ActivityProfileBinding
     private lateinit var dialog: AlertDialog
     private lateinit var shop: Shop
-    private var firstTime : Int = 0
+    private var firstTime: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,21 +61,33 @@ class ProfileActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener {
             selectImage()
         }
 
-        binding.fullName.setOnClickListener{
-            editProfile("Full name", binding.fullName)
+        binding.gender.setOnClickListener {
+            selectGender()
         }
 
-        binding.phone.setOnClickListener{
+        binding.fullName.setOnClickListener {
+            editProfile("Shop name", binding.fullName)
+        }
+
+        binding.phone.setOnClickListener {
             editProfile("Phone", binding.phone)
         }
 
-        binding.address.setOnClickListener{
+        binding.address.setOnClickListener {
             editProfile("Address", binding.address)
+        }
+
+        binding.pinCode.setOnClickListener {
+            editProfile("Pincode", binding.pinCode)
+        }
+
+        binding.ownerName.setOnClickListener {
+            editProfile("Owner name", binding.ownerName)
         }
 
         binding.logout.setOnClickListener {
             INDIPreferences.session(false)
-            val intent = Intent(this,LoginActivity::class.java)
+            val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
         }
@@ -85,6 +97,50 @@ class ProfileActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener {
             category
         )
 
+    }
+
+    private fun selectGender() {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder.setTitle("Select gender")
+        val gender = arrayOf("Male", "Female")
+        builder.setItems(gender)
+        { _, which ->
+            setGender(gender[which])
+            dialog.dismiss()
+        }
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    private fun setGender(value: String) {
+
+        binding.gender.text = value
+        updateGender()
+    }
+
+    private fun updateGender() {
+
+        dialog.show()
+
+        RetrofitInstance.updateRetrofit(
+            INDIMaster.api().updateGender(
+                shop.id.toString(),
+                binding.gender.text.toString()
+            )
+        ) { _: Int, bool: Boolean, value: UpdateResponse ->
+
+            dialog.dismiss()
+
+            if (bool && value.success) {
+                Toaster.longt("Profile updated successfully")
+                val shop: Shop = INDIPreferences.shop()!!
+                shop.gender = binding.gender.text.toString()
+                INDIPreferences.shop(shop)
+
+            } else {
+                Toaster.longt("Failed to update profile")
+            }
+        }
     }
 
     private val category = { _: Int, bool: Boolean, value: CategoryResponse ->
@@ -124,7 +180,10 @@ class ProfileActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener {
                 val byteStream = ByteArrayOutputStream()
                 dialog.show()
 
-                MultipartUploadRequest(this,serverUrl = "http://3.19.184.22/student-union/index.php/api/v1/shop/update/${INDIPreferences.shop()!!.id}")
+                MultipartUploadRequest(
+                    this,
+                    serverUrl = "http://3.19.184.22/student-union/index.php/api/v1/shop/update/${INDIPreferences.shop()!!.id}"
+                )
                     .setMethod("POST")
                     .addFileToUpload(
                         filePath = path.toString(),
@@ -135,7 +194,7 @@ class ProfileActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener {
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteStream)
                 binding.profileImage.scaleType = ImageView.ScaleType.FIT_XY
                 binding.profileImage.setImageBitmap(bitmap)
-                val shop : Shop = INDIPreferences.shop()!!
+                val shop: Shop = INDIPreferences.shop()!!
                 shop.imageUrl = path.toString()
                 INDIPreferences.shop(shop)
 
@@ -154,7 +213,7 @@ class ProfileActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener {
         startActivityForResult(intent, 10)
     }
 
-    private fun define(){
+    private fun define() {
 
         shop = INDIPreferences.shop()!!
 
@@ -163,13 +222,18 @@ class ProfileActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener {
         binding.phone.text = shop.phone
         binding.email.text = shop.email
         binding.address.text = shop.current_address
+        binding.ownerName.text = shop.ownerName
+        binding.gender.text = shop.gender
+        binding.pinCode.text = shop.pinCode
 
         if (shop.imageUrl != "") {
 
             try {
                 binding.profileImage.scaleType = ImageView.ScaleType.FIT_XY
-                Glide.with(this).load("http://3.19.184.22/student-union/index.php/image/shop/${shop.imageUrl}/234").into(binding.profileImage)
-            }catch (e : Exception){
+                Glide.with(this)
+                    .load("http://3.19.184.22/student-union/index.php/image/shop/${shop.imageUrl}/234")
+                    .into(binding.profileImage)
+            } catch (e: Exception) {
                 Toaster.longt("Not found")
             }
         }
@@ -180,9 +244,9 @@ class ProfileActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener {
 
         val taskEditText = EditText(this)
 
-        if (title == "Phone"){
+        if (title == "Phone" || title == "Pincode") {
             taskEditText.inputType = InputType.TYPE_CLASS_PHONE
-        }else{
+        } else {
             taskEditText.inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
         }
 
@@ -192,13 +256,21 @@ class ProfileActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener {
             .setView(taskEditText)
             .setPositiveButton(
                 "Submit"
-            ) { _, _ ->
+            ) { dialog1 , _ ->
 
-                if (taskEditText.text.toString().isNotEmpty()){
+                if (taskEditText.text.toString().isNotEmpty()) {
                     when (title) {
-                        "Full name" -> {
+                        "Shop name" -> {
                             textView.text = taskEditText.text
                             updateName()
+                        }
+                        "Owner name" -> {
+                            textView.text = taskEditText.text
+                            updateOwnerName()
+                        }
+                        "Pincode" -> {
+                            textView.text = taskEditText.text
+                            updatePincode()
                         }
                         "Phone" -> {
                             textView.text = taskEditText.text
@@ -210,6 +282,8 @@ class ProfileActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener {
                             updateAddress()
                         }
                     }
+                }else{
+                    dialog1.dismiss()
                 }
             }
             .setNegativeButton("Cancel", null)
@@ -223,7 +297,57 @@ class ProfileActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener {
         dialog.show()
     }
 
-    private fun updateName(){
+    private fun updateOwnerName() {
+
+        dialog.show()
+
+        RetrofitInstance.updateRetrofit(
+            INDIMaster.api().updateOwnerName(
+                shop.id.toString(),
+                binding.ownerName.text.toString()
+            )
+        ) { _: Int, bool: Boolean, value: UpdateResponse ->
+
+            dialog.dismiss()
+
+            if (bool && value.success) {
+                Toaster.longt("Profile updated successfully")
+                val shop: Shop = INDIPreferences.shop()!!
+                shop.ownerName = binding.ownerName.text.toString()
+                INDIPreferences.shop(shop)
+
+            } else {
+                Toaster.longt("Failed to update profile")
+            }
+        }
+    }
+
+    private fun updatePincode() {
+
+        dialog.show()
+
+        RetrofitInstance.updateRetrofit(
+            INDIMaster.api().updatePinCode(
+                shop.id.toString(),
+                binding.pinCode.text.toString()
+            )
+        ) { _: Int, bool: Boolean, value: UpdateResponse ->
+
+            dialog.dismiss()
+
+            if (bool && value.success) {
+                Toaster.longt("Profile updated successfully")
+                val shop: Shop = INDIPreferences.shop()!!
+                shop.pinCode = binding.pinCode.text.toString()
+                INDIPreferences.shop(shop)
+
+            } else {
+                Toaster.longt("Failed to update profile")
+            }
+        }
+    }
+
+    private fun updateName() {
 
         dialog.show()
 
@@ -232,23 +356,23 @@ class ProfileActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener {
                 shop.id.toString(),
                 binding.fullName.text.toString()
             )
-        ) { _:Int, bool:Boolean, value:UpdateResponse ->
+        ) { _: Int, bool: Boolean, value: UpdateResponse ->
 
             dialog.dismiss()
 
-            if(bool && value.success){
+            if (bool && value.success) {
                 Toaster.longt("Profile updated successfully")
-                val shop : Shop = INDIPreferences.shop()!!
+                val shop: Shop = INDIPreferences.shop()!!
                 shop.name = binding.fullName.text.toString()
                 INDIPreferences.shop(shop)
 
-            } else{
+            } else {
                 Toaster.longt("Failed to update profile")
             }
         }
     }
 
-    private fun updateCategory(category : Int){
+    private fun updateCategory(category: Int) {
 
         dialog.show()
 
@@ -257,23 +381,23 @@ class ProfileActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener {
                 shop.id.toString(),
                 category
             )
-        ) { _:Int, bool:Boolean, value:UpdateResponse ->
+        ) { _: Int, bool: Boolean, value: UpdateResponse ->
 
             dialog.dismiss()
 
-            if(bool && value.success){
+            if (bool && value.success) {
                 Toaster.longt("Profile updated successfully")
-                val shop : Shop = INDIPreferences.shop()!!
+                val shop: Shop = INDIPreferences.shop()!!
                 shop.category = category.toString()
                 INDIPreferences.shop(shop)
 
-            } else{
+            } else {
                 Toaster.longt("Failed to update profile")
             }
         }
     }
 
-    private fun updatePhone(){
+    private fun updatePhone() {
 
         dialog.show()
 
@@ -303,7 +427,7 @@ class ProfileActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener {
         }
     }
 
-    private fun updateAddress(){
+    private fun updateAddress() {
 
         dialog.show()
 
@@ -312,26 +436,27 @@ class ProfileActivity : AppCompatActivity(),AdapterView.OnItemSelectedListener {
                 shop.id.toString(),
                 binding.address.text.toString()
             )
-        ) { _:Int, bool:Boolean, value:UpdateResponse ->
+        ) { _: Int, bool: Boolean, value: UpdateResponse ->
 
             dialog.dismiss()
 
-            if(bool && value.success){
+            if (bool && value.success) {
                 Toaster.longt("Profile updated successfully")
-                val shop : Shop = INDIPreferences.shop()!!
+                val shop: Shop = INDIPreferences.shop()!!
                 shop.current_address = binding.address.text.toString()
                 INDIPreferences.shop(shop)
 
-            } else{
+            } else {
                 Toaster.longt("Failed to update profile")
             }
         }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
+        when (item.itemId) {
             android.R.id.home -> {
                 onBackPressed()
+                return true
             }
         }
         return super.onOptionsItemSelected(item)

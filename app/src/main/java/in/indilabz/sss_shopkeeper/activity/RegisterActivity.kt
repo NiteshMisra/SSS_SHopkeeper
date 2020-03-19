@@ -23,23 +23,42 @@ import dmax.dialog.SpotsDialog
 class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
 
     override fun onNothingSelected(parent: AdapterView<*>?) {
-        categorySelected = false
+        if (parent!!.adapter == genderAdapter){
+            genderSelected = false
+        }else if (parent.adapter == categoryAdapter){
+            categorySelected = false
+        }
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        if (position == 0) {
-            categorySelected = false
-        } else {
-            categoryText = parent!!.getItemAtPosition(position).toString()
-            categorySelected = true
+
+        if (parent!!.adapter == genderAdapter){
+
+            if (position == 0) {
+                genderSelected = false
+            } else {
+                gender = parent.getItemAtPosition(position).toString()
+                genderSelected = true
+            }
+
+        }else if(parent.adapter == categoryAdapter){
+            if (position == 0) {
+                categorySelected = false
+            } else {
+                categoryPosition = position
+                categorySelected = true
+            }
         }
     }
 
     private lateinit var binding: ActivityRegisterBinding
     private var serverOtp: String? = null
     private var categorySelected: Boolean = false
-    private lateinit var categoryText: String
-
+    private var categoryPosition : Int = 0
+    private var genderSelected: Boolean = false
+    private lateinit var gender: String
+    private lateinit var genderAdapter : ArrayAdapter<CharSequence>
+    private lateinit var categoryAdapter: ArrayAdapter<String>
     private lateinit var dialog: AlertDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +71,15 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
 
         dialog = SpotsDialog.Builder().setContext(this).build()
 
+        genderAdapter = ArrayAdapter.createFromResource(
+            this,
+            R.array.genderArray,
+            android.R.layout.simple_spinner_item
+        )
+        genderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.gender.adapter = genderAdapter
+        binding.gender.onItemSelectedListener = this
+
         RetrofitInstance.getCategoryRetrofit(
             INDIMaster.api().getCategory(),
             category
@@ -63,6 +91,11 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
 
         binding.submit.setOnClickListener {
 
+            if (binding.ownerName.editText!!.text.isEmpty()){
+                Toaster.longt("Enter Shop's Owner name")
+                return@setOnClickListener
+            }
+
             if (binding.phone.editText!!.text.length != 10) {
                 Toaster.longt("Enter valid Mobile No.")
                 return@setOnClickListener
@@ -73,7 +106,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                 return@setOnClickListener
             }
             if (!categorySelected) {
-                Toaster.longt("Select category")
+                Toaster.longt("Select Shop category")
                 return@setOnClickListener
             }
 
@@ -92,15 +125,23 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                 return@setOnClickListener
             }
 
+            if (binding.pinCode.editText!!.text.toString().isEmpty()){
+                Toaster.longt("Enter the pincode")
+                return@setOnClickListener
+            }
+
             if (binding.fullName.editText!!.text.isEmpty() ){
-                Toaster.longt("Enter your name")
+                Toaster.longt("Enter the shop's full name")
+                return@setOnClickListener
+            }
+
+            if (binding.password.editText!!.text.toString() != binding.confirmPassword.editText!!.text.toString()){
+                Toaster.longt("Password not matching")
                 return@setOnClickListener
             }
 
             executeRegister()
         }
-
-        binding.swipe.setOnRefreshListener { binding.swipe.isRefreshing = false }
     }
 
     private fun executeRegister() {
@@ -133,7 +174,7 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
                     list.add(item.title)
                 }
 
-                val categoryAdapter = ArrayAdapter<String>(
+                categoryAdapter = ArrayAdapter(
                     this,
                     android.R.layout.simple_spinner_item,
                     list
@@ -155,11 +196,14 @@ class RegisterActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener
             val register = Register(
                 binding.phone.editText!!.text.toString(),
                 binding.fullName.editText!!.text.toString(),
-                categoryText,
+                categoryPosition.toString(),
                 binding.email.editText!!.text.toString(),
                 binding.curAddress.editText!!.text.toString(),
                 binding.perAddress.editText!!.text.toString(),
-                binding.password.editText!!.text.toString()
+                binding.password.editText!!.text.toString(),
+                binding.pinCode.editText!!.text.toString(),
+                gender,
+                binding.ownerName.editText!!.text.toString()
             )
 
             dialog.dismiss()

@@ -259,46 +259,14 @@ class RetrofitInstance : Constants {
 
                     } else {
 
-                        try {
-                            Log.d("TAG_REAL_ERROR", response.errorBody()!!.string())
-                        } catch (e: Exception) {
-
-                            Log.d("TAG_REAL_ERROR_EX", e.message!!)
+                        try{
+                            retrofitListener.invoke(false, INDIMaster.gson.fromJson(response.errorBody()!!.string(), LoginResponse::class.java))
                         }
+                        catch (e : Exception){
 
-                        /*try {
-
-                            //Toaster.longToast(response.errorBody()!!.string())
-
-                            val apiError = INDIMaster.gson.fromJson(response.errorBody()!!.string(), ModelAPIError::class.java)
-
-                            if (apiError.error == "AUTH_ERROR") {
-
-                                if (INDIPreferences.preferenceEditor().clear().commit()) {
-
-                                    INDIMaster.applicationContext().startActivity(Intent(INDIMaster.applicationContext(), SplashActivity::class.java))
-                                    INDIPreferences.session(false)
-                                    INDIPreferences.backpress(false)
-                                }
-
-                            } else {
-
-                                val loginResponse = LoginResponse(false,apiError.error,null)
-                                retrofitListener.invoke(false, loginResponse)
-                            }
-                        } catch (e: Exception) {
-
-                            /// Log.d("TAG_EXCEPTION_ERROR", e.toString())
-
-                            try{
-
-                                val loginResponse = LoginResponse(false,e.message,null)
-                                retrofitListener.invoke(false,loginResponse)
-                            }
-                            catch (e : Exception){
-                                e.printStackTrace()
-                            }
-                        }*/
+                            retrofitListener.invoke(false, LoginResponse(false,"Error while getting data!", "",null))
+                            e.printStackTrace()
+                        }
 
                     }
 
@@ -309,7 +277,7 @@ class RetrofitInstance : Constants {
                     //Log.d("TAG_RETROFIT_THROW", t.message)
                     try{
 
-                        val loginResponse = LoginResponse(false,t.message,null)
+                        val loginResponse = LoginResponse(false,t.message,"",null)
                         retrofitListener.invoke(false, loginResponse)
 
                     }catch (e : Exception){

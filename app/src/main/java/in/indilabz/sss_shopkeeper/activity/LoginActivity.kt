@@ -11,6 +11,7 @@ import `in`.indilabz.sss_shopkeeper.utils.INDIPreferences
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -66,43 +67,30 @@ class LoginActivity : AppCompatActivity() {
     private val login = {  bool: Boolean, value:LoginResponse ->
 
         dialog.dismiss()
-        if(bool){
+        if(bool && value.success){
 
-            try{
+            val loginresult = value.loginResult!!
+            val shopResponse = Shop(
+                loginresult.id,
+                loginresult.name,
+                loginresult.email,
+                loginresult.phone,
+                loginresult.password,
+                loginresult.category.toString(),
+                loginresult.currentAddress,
+                loginresult.shopImage,
+                loginresult.gender,
+                loginresult.pincode,
+                loginresult.ownerName)
 
-                val loginresult = value.loginResult
-                if(value.success && loginresult != null){
-                    val shopResponse = Shop(
-                        loginresult.id,
-                        loginresult.name,
-                        loginresult.email,
-                        loginresult.phone,
-                        loginresult.password,
-                        loginresult.category.toString(),
-                        loginresult.currentAddress,
-                        loginresult.shopImage)
+            INDIPreferences.shop(shopResponse)
+            INDIPreferences.session(true)
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
 
-                    INDIPreferences.shop(shopResponse)
-                    INDIPreferences.session(true)
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish()
-                }
-                else{
-                    INDIPreferences.session(false)
-                    //Toaster.longt(value.message)
-                }
+        }else{
 
-            }catch (e: Exception){
-
-                INDIPreferences.session(false)
-                //Toaster.longt(e.message!!)
-            }
-        }
-        else{
-
-            if (value.message != null) {
-                Toaster.longt(value.message)
-            }
+            Toaster.longt("Invalid Credentials")
         }
     }
 }

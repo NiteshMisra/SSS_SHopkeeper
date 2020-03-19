@@ -99,10 +99,10 @@
                     android:layout_marginStart="@dimen/fab_margin"
                     android:layout_marginEnd="@dimen/fab_margin"
                     android:fontFamily="@font/poppins"
-                    android:text="Full Name   (Click below to edit)" />
+                    android:text="Shop Owner Name   (Click below to edit)" />
 
                 <TextView
-                    android:id="@+id/fullName"
+                    android:id="@+id/owner_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/rect_gray"
@@ -119,14 +119,14 @@
                     android:layout_height="wrap_content"
                     android:textColorHint="@color/black"
                     android:layout_marginTop="20dp"
-                    android:fontFamily="@font/poppins"
                     android:textSize="13sp"
                     android:layout_marginStart="@dimen/fab_margin"
                     android:layout_marginEnd="@dimen/fab_margin"
-                    android:text="Phone   (Click below to edit)"/>
+                    android:fontFamily="@font/poppins"
+                    android:text="Gender   (Click below to edit)" />
 
                 <TextView
-                    android:id="@+id/phone"
+                    android:id="@+id/gender"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/rect_gray"
@@ -135,7 +135,8 @@
                     android:layout_marginEnd="@dimen/fab_margin"
                     android:textColor="@color/black"
                     android:fontFamily="@font/poppins"
-                    android:textColorHint="@color/black"/>
+                    android:textColorHint="@color/black"
+                    android:textSize="14sp"/>
 
                 <TextView
                     android:layout_width="match_parent"
@@ -165,6 +166,30 @@
                     android:layout_height="wrap_content"
                     android:textColorHint="@color/black"
                     android:layout_marginTop="20dp"
+                    android:textSize="13sp"
+                    android:layout_marginStart="@dimen/fab_margin"
+                    android:layout_marginEnd="@dimen/fab_margin"
+                    android:fontFamily="@font/poppins"
+                    android:text="Shop Name   (Click below to edit)" />
+
+                <TextView
+                    android:id="@+id/fullName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rect_gray"
+                    android:padding="10dp"
+                    android:layout_marginStart="@dimen/fab_margin"
+                    android:layout_marginEnd="@dimen/fab_margin"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/poppins"
+                    android:textColorHint="@color/black"
+                    android:textSize="14sp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/black"
+                    android:layout_marginTop="20dp"
                     android:fontFamily="@font/poppins"
                     android:textSize="13sp"
                     android:layout_marginStart="@dimen/fab_margin"
@@ -185,6 +210,29 @@
                     android:layout_height="wrap_content"
                     android:textColorHint="@color/black"
                     android:layout_marginTop="20dp"
+                    android:fontFamily="@font/poppins"
+                    android:textSize="13sp"
+                    android:layout_marginStart="@dimen/fab_margin"
+                    android:layout_marginEnd="@dimen/fab_margin"
+                    android:text="Phone   (Click below to edit)"/>
+
+                <TextView
+                    android:id="@+id/phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rect_gray"
+                    android:padding="10dp"
+                    android:layout_marginStart="@dimen/fab_margin"
+                    android:layout_marginEnd="@dimen/fab_margin"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/poppins"
+                    android:textColorHint="@color/black"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/black"
+                    android:layout_marginTop="20dp"
                     android:textSize="13sp"
                     android:layout_marginStart="@dimen/fab_margin"
                     android:layout_marginEnd="@dimen/fab_margin"
@@ -193,6 +241,30 @@
 
                 <TextView
                     android:id="@+id/address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rect_gray"
+                    android:padding="10dp"
+                    android:fontFamily="@font/poppins"
+                    android:layout_marginStart="@dimen/fab_margin"
+                    android:layout_marginEnd="@dimen/fab_margin"
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    android:textColorHint="@color/black" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColorHint="@color/black"
+                    android:layout_marginTop="20dp"
+                    android:textSize="13sp"
+                    android:layout_marginStart="@dimen/fab_margin"
+                    android:layout_marginEnd="@dimen/fab_margin"
+                    android:fontFamily="@font/poppins"
+                    android:text="Pin code   (Click below to edit)"/>
+
+                <TextView
+                    android:id="@+id/pinCode"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/rect_gray"

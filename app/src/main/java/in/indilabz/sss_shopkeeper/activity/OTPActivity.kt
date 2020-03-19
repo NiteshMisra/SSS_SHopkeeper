@@ -56,7 +56,10 @@ class OTPActivity : AppCompatActivity() {
                         registerModal.email,
                         registerModal.currentAddress,
                         registerModal.perAddress,
-                        registerModal.password
+                        registerModal.password,
+                        registerModal.pincode,
+                        registerModal.gender,
+                        registerModal.ownerName
                     ),
                     register
                 )
@@ -88,7 +91,10 @@ class OTPActivity : AppCompatActivity() {
                     loginresult.password,
                     loginresult.category.toString(),
                     loginresult.currentAddress,
-                    ""
+                    "",
+                    loginresult.gender,
+                    loginresult.pincode,
+                    loginresult.ownerName
                 )
 
                 INDIPreferences.shop(shopResponse)

@@ -22,6 +22,15 @@ public class RegisterResult {
     @SerializedName("category")
     private String category;
 
+    @SerializedName("pincode")
+    private String pincode;
+
+    @SerializedName("gender")
+    private String gender;
+
+    @SerializedName("owner_name")
+    private String ownerName;
+
     @SerializedName("current_address")
     private String currentAddress;
 
@@ -34,13 +43,16 @@ public class RegisterResult {
     @SerializedName("updated_at")
     private String updatedAt;
 
-    public RegisterResult(Integer id, String name, String email, String phone, String password, String category, String currentAddress, String permanentAddress, String createdAt, String updatedAt) {
+    public RegisterResult(Integer id, String name, String email, String phone, String password, String category, String pincode, String gender, String ownerName, String currentAddress, String permanentAddress, String createdAt, String updatedAt) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.phone = phone;
         this.password = password;
         this.category = category;
+        this.pincode = pincode;
+        this.gender = gender;
+        this.ownerName = ownerName;
         this.currentAddress = currentAddress;
         this.permanentAddress = permanentAddress;
         this.createdAt = createdAt;
@@ -69,6 +81,18 @@ public class RegisterResult {
 
     public String getCategory() {
         return category;
+    }
+
+    public String getPincode() {
+        return pincode;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
     }
 
     public String getCurrentAddress() {

@@ -13,11 +13,17 @@ public class LoginResult {
     @SerializedName("name")
     private String name;
 
+    @SerializedName("owner_name")
+    private String ownerName;
+
     @SerializedName("email")
     private String email;
 
     @SerializedName("phone")
     private String phone;
+
+    @SerializedName("gender")
+    private String gender;
 
     @SerializedName("password")
     private String password;
@@ -30,6 +36,9 @@ public class LoginResult {
 
     @SerializedName("current_address")
     private String currentAddress;
+
+    @SerializedName("pincode")
+    private String pincode;
 
     @SerializedName("permanent_address")
     private String permanentAddress;
@@ -46,16 +55,19 @@ public class LoginResult {
     @SerializedName("updated_at")
     private String updatedAt;
 
-    public LoginResult(Integer id, String uniqueId, String name, String email, String phone, String password, Integer category, String shopImage, String currentAddress, String permanentAddress, Float wallet, Integer verified, String createdAt, String updatedAt) {
+    public LoginResult(Integer id, String uniqueId, String name, String ownerName, String email, String phone, String gender, String password, Integer category, String shopImage, String currentAddress, String pincode, String permanentAddress, Float wallet, Integer verified, String createdAt, String updatedAt) {
         this.id = id;
         this.uniqueId = uniqueId;
         this.name = name;
+        this.ownerName = ownerName;
         this.email = email;
         this.phone = phone;
+        this.gender = gender;
         this.password = password;
         this.category = category;
         this.shopImage = shopImage;
         this.currentAddress = currentAddress;
+        this.pincode = pincode;
         this.permanentAddress = permanentAddress;
         this.wallet = wallet;
         this.verified = verified;
@@ -75,12 +87,20 @@ public class LoginResult {
         return name;
     }
 
+    public String getOwnerName() {
+        return ownerName;
+    }
+
     public String getEmail() {
         return email;
     }
 
     public String getPhone() {
         return phone;
+    }
+
+    public String getGender() {
+        return gender;
     }
 
     public String getPassword() {
@@ -97,6 +117,10 @@ public class LoginResult {
 
     public String getCurrentAddress() {
         return currentAddress;
+    }
+
+    public String getPincode() {
+        return pincode;
     }
 
     public String getPermanentAddress() {
