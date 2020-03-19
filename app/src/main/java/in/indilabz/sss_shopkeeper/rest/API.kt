@@ -45,7 +45,7 @@ interface API {
     fun getCategory(): Call<CategoryResponse>
 
     @FormUrlEncoded
-    @POST("discounts/availed")
+    @POST("api/v1/discounts/availed")
     fun discountLog(
         @Field("id") id: String,
         @Field("student") student_id: String,
